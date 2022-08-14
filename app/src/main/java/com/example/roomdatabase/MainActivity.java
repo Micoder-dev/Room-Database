@@ -1,5 +1,6 @@
 package com.example.roomdatabase;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -11,6 +12,8 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -134,5 +137,55 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void DeleteContact(Contact contact, int position) {
 
+        contactArrayList.remove(position);
+        db.deleteContact(contact);
+        contactsAdapter.notifyDataSetChanged();
+
+    }
+
+    private void UpdateContact(String name, String email, int position) {
+
+        Contact contact = contactArrayList.get(position);
+
+        contact.setName(name);
+        contact.setEmail(email);
+
+        db.updateContacts(contact);
+
+        contactArrayList.set(position, contact);
+        contactsAdapter.notifyDataSetChanged();
+
+    }
+
+    private void CreateContact(String name, String email) {
+
+        long id = db.insertContact(name, email);
+        Contact contact = db.getContact(id);
+
+        if (contact != null) {
+            contactArrayList.add(0, contact);
+            contactsAdapter.notifyDataSetChanged();
+        }
+
+    }
+
+
+    // Menu Bar
+    @Override
+    public boolean onCreateOptionsMenu(@NonNull Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_settings) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }
