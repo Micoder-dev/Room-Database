@@ -11,6 +11,8 @@ import androidx.room.Room;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -26,6 +28,8 @@ import com.example.roomdatabase.db.entity.Contact;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -60,7 +64,8 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
         // Displaying all Contacts List
-        contactArrayList.addAll(contactsAppDatabase.getContactDAO().getContacts());
+        // contactArrayList.addAll(contactsAppDatabase.getContactDAO().getContacts());
+        DisplayAllContactsInBackGround();
 
         contactsAdapter = new ContactsAdapter(this, contactArrayList, MainActivity.this);
 
@@ -174,6 +179,34 @@ public class MainActivity extends AppCompatActivity {
             contactArrayList.add(0, contact);
             contactsAdapter.notifyDataSetChanged();
         }
+
+    }
+
+
+    private void DisplayAllContactsInBackGround() {
+
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+
+        Handler handler = new Handler(Looper.getMainLooper());
+
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+
+
+                // Background Work
+                contactArrayList.addAll(contactsAppDatabase.getContactDAO().getContacts());
+
+                // Executed after the background work had finished
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        contactsAdapter.notifyDataSetChanged();
+                    }
+                });
+
+            }
+        });
 
     }
 
