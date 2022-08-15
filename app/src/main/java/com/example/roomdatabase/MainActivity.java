@@ -20,7 +20,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.roomdatabase.adapter.ContactsAdapter;
-import com.example.roomdatabase.db.DatabaseHelper;
 import com.example.roomdatabase.db.entity.Contact;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
