@@ -8,12 +8,15 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
+import androidx.room.RoomDatabase;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -55,12 +58,44 @@ public class MainActivity extends AppCompatActivity {
         // RecyclerView
         recyclerView = findViewById(R.id.recycler_view_contacts);
 
+
+
+        // Callbacks
+        RoomDatabase.Callback myCallBack = new RoomDatabase.Callback() {
+            @Override
+            public void onCreate(@NonNull SupportSQLiteDatabase db) {
+                super.onCreate(db);
+
+                // These are 4 contacts already created in the app when installed (Built-In Contacts)
+//                CreateContact("Micoder", "micoder.com@gmail.com");
+//                CreateContact("Ind", "ind@gmail.com");
+//                CreateContact("RB", "rb@gmail.com");
+//                CreateContact("Vel", "vel@gmail.com"); BUT NOW IT'S NOT WORKING even toast messages only works with LOG
+
+                Log.i("CALLBACKS", "Database has been created");
+
+            }
+
+            @Override
+            public void onOpen(@NonNull SupportSQLiteDatabase db) {
+                super.onOpen(db);
+
+                Log.i("CALLBACKS", "Database has been opened");
+
+            }
+        };
+
+
+
+
+
         // Database
         contactsAppDatabase = Room.databaseBuilder(
                 getApplicationContext(),
                 ContactsAppDatabase.class,
                 "ContactDB")
-                .allowMainThreadQueries()
+                //.allowMainThreadQueries() it should had to be removed when background process has added ex:DisplayAllContactsInBackGround();
+                .addCallback(myCallBack)
                 .build();
 
         // Displaying all Contacts List
